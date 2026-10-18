@@ -1,12 +1,15 @@
 package es.upm.miw.bantumi.ui.actividades;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.FileOutputStream;
 import java.util.Locale;
 
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
@@ -142,6 +146,27 @@ public class MainActivity extends AppCompatActivity {
         // @TODO!!! resto opciones
         } else if (itemId == R.id.opcReiniciarPartida) {
             new ResetDialog().show(getSupportFragmentManager(), "RESET_DIALOG");
+        } else if (itemId == R.id.opcGuardarPartida) {
+            String partidaSerializada = juegoBantumi.serializa();
+
+            FileOutputStream fos;
+
+            try {
+                fos = openFileOutput(getString(R.string.default_NombreFich), Context.MODE_PRIVATE);
+
+                fos.write(partidaSerializada.getBytes());
+                fos.close();
+
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtPartidaGuardada),
+                        Snackbar.LENGTH_SHORT
+                ).show();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "FILE I/O ERROR: " + e.getMessage());
+            }
+
+            Log.i("MiW", "Partida guardada");
         } else {
             Snackbar.make(
                     findViewById(android.R.id.content),

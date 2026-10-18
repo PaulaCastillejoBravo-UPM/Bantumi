@@ -51,4 +51,8 @@
     <string name="txtDialogoReinicioTitulo">Reiniciar partida</string>
     <string name="txtDialogoReinicioPregunta">¿Está seguro de que desea reiniciar la partida? Se perderá el progreso guardado.</string>
 
+    <!-- Partida guardada-->
+    <string name="txtPartidaGuardada">Partida guardada</string>
+    <string name="default_NombreFich">fichero_Datos_Partida_MiW.txt</string>
+
 </resources>

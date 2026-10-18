@@ -2,6 +2,8 @@ package es.upm.miw.bantumi.dominio.logica;
 
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 
 public class JuegoBantumi {
@@ -204,8 +206,15 @@ public class JuegoBantumi {
      * @return juego serializado
      */
     public String serializa() {
-        // @TODO
-        return null;
+        String partidaSerializada = "";
+
+        for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++) {
+           partidaSerializada += getSemillas(i) + ";";
+        }
+
+        partidaSerializada += turnoActual().toString();
+
+        return partidaSerializada;
     }
 
     /**
