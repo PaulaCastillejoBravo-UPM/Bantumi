@@ -24,6 +24,7 @@ import java.util.Locale;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
+import es.upm.miw.bantumi.ui.fragmentos.ResetDialog;
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -139,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         // } else if (itemId == R.id.opcAjustes) { // @TODO Preferencias
             // startActivity(new Intent(this, BantumiPrefs.class));
         // @TODO!!! resto opciones
+        } else if (itemId == R.id.opcReiniciarPartida) {
+            new ResetDialog().show(getSupportFragmentManager(), "RESET_DIALOG");
         } else {
             Snackbar.make(
                     findViewById(android.R.id.content),
