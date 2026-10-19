@@ -51,8 +51,16 @@
     <string name="txtDialogoReinicioTitulo">Reiniciar partida</string>
     <string name="txtDialogoReinicioPregunta">¿Está seguro de que desea reiniciar la partida? Se perderá el progreso guardado.</string>
 
+    <!-- Diálogo Recuperación -->
+    <string name="txtDialogoRecuperacionTitulo">Recuperar partida guardada</string>
+    <string name="txtDialogoRecuperacionPregunta">¿Está seguro de que desea recuperar la partida guardada? Se perderán los cambios de la partida actual.</string>
+
     <!-- Partida guardada-->
     <string name="txtPartidaGuardada">Partida guardada</string>
     <string name="default_NombreFich">fichero_Datos_Partida_MiW.txt</string>
 
+    <!-- Partida recuperada-->
+    <string name="txtPartidaRecuperada">Partida recuperada</string>
+    <string name="txtFicheroVacio">No hay partidas guardadas</string>
+    <string name="txtPartidasIdenticas">La partida actual ya coincide con la partida guardada</string>
 </resources>

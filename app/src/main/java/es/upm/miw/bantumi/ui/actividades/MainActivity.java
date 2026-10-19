@@ -22,12 +22,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
+import es.upm.miw.bantumi.ui.fragmentos.RecoverDialog;
 import es.upm.miw.bantumi.ui.fragmentos.ResetDialog;
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 
@@ -167,6 +171,48 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.i("MiW", "Partida guardada");
+        } else if (itemId == R.id.opcRecuperarPartida) {
+            boolean hayContenido = false;
+            BufferedReader fin;
+            String partidaRecuperada = "";
+
+            try {
+                fin = new BufferedReader(
+                        new InputStreamReader(openFileInput(getString(R.string.default_NombreFich))));
+
+                String linea = fin.readLine();
+                while (linea != null) {
+                    hayContenido = true;
+                    partidaRecuperada = linea;
+                    linea = fin.readLine();
+                }
+                fin.close();
+
+                Log.i(LOG_TAG, "Partida recuperada:" + partidaRecuperada);
+
+                if(partidaRecuperada.equals(juegoBantumi.serializa())) {
+                    Snackbar.make(
+                            findViewById(android.R.id.content),
+                            getString(R.string.txtPartidasIdenticas),
+                            Snackbar.LENGTH_SHORT
+                    ).show();
+                }else {
+                    new RecoverDialog(partidaRecuperada).show(getSupportFragmentManager(), "RECOVER_DIALOG");
+                }
+
+                Log.i(LOG_TAG, "Partida recuperada");
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "FILE I/O ERROR: " + e.getMessage());
+            }
+
+            if (!hayContenido) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtFicheroVacio),
+                        Snackbar.LENGTH_SHORT
+                ).show();
+            }
+
         } else {
             Snackbar.make(
                     findViewById(android.R.id.content),

@@ -223,6 +223,14 @@ public class JuegoBantumi {
      * @param juegoSerializado cadena que representa el estado completo del juego
      */
     public void deserializa(String juegoSerializado) {
-        // @TODO
+        String [] juegoDeserializado = juegoSerializado.split(";");
+
+        for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++) {
+            int valor = Integer.parseInt(juegoDeserializado[i]);
+            setSemillas(i, valor);
+        }
+
+        setTurno(JuegoBantumi.Turno.valueOf(juegoDeserializado[juegoDeserializado.length-1]));
+
     }
 }
