@@ -2,6 +2,8 @@ package es.upm.miw.bantumi.ui.actividades;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,6 +21,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
+import androidx.room.Room;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -26,8 +30,13 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import es.upm.miw.bantumi.datos.models.PuntuacionPartida;
+import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRepositorio;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
@@ -41,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
     public JuegoBantumi juegoBantumi;
     private BantumiViewModel bantumiVM;
     int numInicialSemillas;
+
+    PuntuacionPartidaRepositorio puntuacionPartidaRepositorio;
+    List<PuntuacionPartida> puntuacionPartidas;
+    private String nombreJugador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +72,18 @@ public class MainActivity extends AppCompatActivity {
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
         juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
         crearObservadores();
+
+        puntuacionPartidaRepositorio = Room.databaseBuilder(
+                        getApplicationContext(),
+                        PuntuacionPartidaRepositorio.class,
+                        PuntuacionPartidaRepositorio.BASE_DATOS
+                )
+                .allowMainThreadQueries()
+                .build();
+
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
+
+        nombreJugador = preferencias.getString(getString(R.string.key_NombreJugador), getString(R.string.txtPlayer1));
     }
 
     /**
@@ -145,9 +170,8 @@ public class MainActivity extends AppCompatActivity {
                     .setMessage(R.string.aboutMessage)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
-        // } else if (itemId == R.id.opcAjustes) { // @TODO Preferencias
-            // startActivity(new Intent(this, BantumiPrefs.class));
-        // @TODO!!! resto opciones
+        } else if (itemId == R.id.opcAjustes) {
+            startActivity(new Intent(this, BantumiPrefs.class));
         } else if (itemId == R.id.opcReiniciarPartida) {
             new ResetDialog().show(getSupportFragmentManager(), "RESET_DIALOG");
         } else if (itemId == R.id.opcGuardarPartida) {
@@ -254,13 +278,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private void finJuego() {
         String texto = (juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
-                ? "Gana Jugador 1"
+                ? "Gana " + nombreJugador
                 : "Gana Jugador 2";
         if (juegoBantumi.getSemillas(6) == 6 * numInicialSemillas) {
             texto = "¡¡¡ EMPATE !!!";
         }
 
-        // @TODO guardar puntuación
+        String fechaHora = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss",
+                Locale.getDefault()
+        ).format(new Date());
+
+        puntuacionPartidaRepositorio.puntuacionPartidaDAO().insert(new PuntuacionPartida(nombreJugador, fechaHora, juegoBantumi.getSemillas(7-1) , juegoBantumi.getSemillas(14-1)));
 
         // terminar
         new FinalAlertDialog(texto).show(getSupportFragmentManager(), "ALERT_DIALOG");

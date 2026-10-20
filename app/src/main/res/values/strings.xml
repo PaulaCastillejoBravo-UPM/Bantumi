@@ -63,4 +63,10 @@
     <string name="txtPartidaRecuperada">Partida recuperada</string>
     <string name="txtFicheroVacio">No hay partidas guardadas</string>
     <string name="txtPartidasIdenticas">La partida actual ya coincide con la partida guardada</string>
+
+    <!-- Preferencias -->
+    <string name="key_NombreJugador">pref_NombreJugador</string>
+    <string name="txtAjustesTitulo">Ajustes</string>
+    <string name="txtNombreJugadorTitulo">Nombre del jugador</string>
+
 </resources>
