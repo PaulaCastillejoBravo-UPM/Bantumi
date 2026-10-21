@@ -69,4 +69,14 @@
     <string name="txtAjustesTitulo">Ajustes</string>
     <string name="txtNombreJugadorTitulo">Nombre del jugador</string>
 
+    <!-- Tabla de mejores puntuaciones-->
+    <string name="txtJugadorNombre">Jugador</string>
+    <string name="txtMejorPuntuacion">Mejor puntuación</string>
+    <string name="txtOpcEliminar">Eliminar puntuaciones</string>
+
+    <!-- Diálogo Eliminación Puntuaciones -->
+    <string name="txtDialogoEliminacionTitulo">Eliminar puntuaciones</string>
+    <string name="txtDialogoEliminacionPregunta">¿Está seguro de que desea eliminar todas las puntuaciones guardadas? Se perderá el progreso del juago.</string>
+
+
 </resources>

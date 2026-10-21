@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -22,21 +20,18 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
-import androidx.room.Room;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import es.upm.miw.bantumi.datos.models.PuntuacionPartida;
-import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRepositorio;
+import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRoomDatabase;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
@@ -51,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private BantumiViewModel bantumiVM;
     int numInicialSemillas;
 
-    PuntuacionPartidaRepositorio puntuacionPartidaRepositorio;
-    List<PuntuacionPartida> puntuacionPartidas;
+    private PuntuacionPartidaRoomDatabase puntuacionPartidaRoomDatabase;
     private String nombreJugador;
 
     @Override
@@ -73,17 +67,13 @@ public class MainActivity extends AppCompatActivity {
         juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
         crearObservadores();
 
-        puntuacionPartidaRepositorio = Room.databaseBuilder(
-                        getApplicationContext(),
-                        PuntuacionPartidaRepositorio.class,
-                        PuntuacionPartidaRepositorio.BASE_DATOS
-                )
-                .allowMainThreadQueries()
-                .build();
+        puntuacionPartidaRoomDatabase = PuntuacionPartidaRoomDatabase.getDatabase(this);
+    }
 
-        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
-
-        nombreJugador = preferencias.getString(getString(R.string.key_NombreJugador), getString(R.string.txtPlayer1));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        actualizarNombreJugador();
     }
 
     /**
@@ -237,6 +227,9 @@ public class MainActivity extends AppCompatActivity {
                 ).show();
             }
 
+        } else if (itemId == R.id.opcMejoresResultados) {
+            Intent intent = new Intent(MainActivity.this, PuntuacionActivity.class);
+            startActivity(intent);
         } else {
             Snackbar.make(
                     findViewById(android.R.id.content),
@@ -289,9 +282,40 @@ public class MainActivity extends AppCompatActivity {
                 Locale.getDefault()
         ).format(new Date());
 
-        puntuacionPartidaRepositorio.puntuacionPartidaDAO().insert(new PuntuacionPartida(nombreJugador, fechaHora, juegoBantumi.getSemillas(7-1) , juegoBantumi.getSemillas(14-1)));
+        int semillasJugador1 = juegoBantumi.getSemillas(7 - 1);
+        int semillasJugador2 = juegoBantumi.getSemillas(14 - 1);
+
+        String nombreMejorJugador;
+
+        if (semillasJugador1 > semillasJugador2) {
+            nombreMejorJugador = nombreJugador;
+        } else if (semillasJugador2 > semillasJugador1) {
+            nombreMejorJugador = "Jugador 2 (Ordenador)";
+        } else {
+            nombreMejorJugador = nombreJugador;
+        }
+
+        puntuacionPartidaRoomDatabase.puntuacionPartidaDAO().insert(new PuntuacionPartida(
+                                                nombreMejorJugador,
+                                                fechaHora,
+                                                semillasJugador1,
+                                                semillasJugador2
+                                        ));
 
         // terminar
         new FinalAlertDialog(texto).show(getSupportFragmentManager(), "ALERT_DIALOG");
+    }
+
+    private void actualizarNombreJugador() {
+        SharedPreferences preferencias =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        nombreJugador = preferencias.getString(
+                getString(R.string.key_NombreJugador),
+                getString(R.string.txtPlayer1)
+        );
+
+        TextView tvJugador1 = findViewById(R.id.tvPlayer1);
+        tvJugador1.setText(nombreJugador);
     }
 }

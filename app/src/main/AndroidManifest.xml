@@ -25,6 +25,7 @@
         <activity
             android:name=".ui.actividades.BantumiPrefs"
             android:exported="false" />
+        <activity android:name=".ui.actividades.PuntuacionActivity" />
     </application>
 
 </manifest>

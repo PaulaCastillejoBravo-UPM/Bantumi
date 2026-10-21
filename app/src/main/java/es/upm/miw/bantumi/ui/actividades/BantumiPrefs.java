@@ -16,6 +16,10 @@ public class BantumiPrefs extends AppCompatActivity {
 
         setContentView(R.layout.activity_settings);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsFragment())

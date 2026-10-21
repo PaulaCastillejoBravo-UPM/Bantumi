@@ -1,7 +1,5 @@
 package es.upm.miw.bantumi.datos.models;
 
-import android.os.Parcelable;
-
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -56,5 +54,12 @@ public class PuntuacionPartida {
 
     public void setSemillasAlmacen2(int semillasAlmacen2) {
         this.semillasAlmacen2 = semillasAlmacen2;
+    }
+
+    public int getMejorPuntuacion(){
+        return Math.max(
+                this.getSemillasAlmacen1(),
+                this.getSemillasAlmacen2()
+        );
     }
 }
