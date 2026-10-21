@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private PuntuacionPartidaRoomDatabase puntuacionPartidaRoomDatabase;
     private String nombreJugador;
 
+    private View ultimaCasillaSeleccionada = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,11 +254,27 @@ public class MainActivity extends AppCompatActivity {
         switch (juegoBantumi.turnoActual()) {
             case turnoJ1:
                 Log.i(LOG_TAG, "* Juega Jugador");
+                resaltarCasillaSeleccionada(v);
                 juegoBantumi.jugar(num);
                 break;
             case turnoJ2:
                 Log.i(LOG_TAG, "* Juega Computador");
-                juegoBantumi.juegaComputador();
+                int posComputador = juegoBantumi.juegaComputador();
+                String idCasilla = String.format(
+                        Locale.getDefault(),
+                        "casilla_%02d",
+                        posComputador
+                );
+
+                int id = getResources().getIdentifier(
+                        idCasilla, "id", getPackageName()
+                );
+
+                View casillaComputador = findViewById(id);
+
+                if (casillaComputador != null) {
+                    resaltarCasillaSeleccionada(casillaComputador);
+                }
                 break;
             default:    // JUEGO TERMINADO
                 finJuego();
@@ -270,6 +288,8 @@ public class MainActivity extends AppCompatActivity {
      * El juego ha terminado. Volver a jugar?
      */
     private void finJuego() {
+        quitarResaltado();
+
         String texto = (juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
                 ? "Gana " + nombreJugador
                 : "Gana Jugador 2";
@@ -317,5 +337,34 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvJugador1 = findViewById(R.id.tvPlayer1);
         tvJugador1.setText(nombreJugador);
+    }
+
+    private void resaltarCasillaSeleccionada(@NonNull View casilla) {
+        if (ultimaCasillaSeleccionada != null) {
+            ultimaCasillaSeleccionada.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            getColor(R.color.md_theme_light_primary)
+                    ));
+        }
+
+        casilla.setBackgroundTintList(
+                android.content.res.ColorStateList.valueOf(
+                        getColor(android.R.color.holo_green_light)
+                )
+        );
+
+        ultimaCasillaSeleccionada = casilla;
+    }
+
+    public void quitarResaltado() {
+        if (ultimaCasillaSeleccionada != null) {
+            ultimaCasillaSeleccionada.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            getColor(R.color.md_theme_light_primary)
+                    )
+            );
+
+            ultimaCasillaSeleccionada = null;
+        }
     }
 }

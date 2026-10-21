@@ -37,6 +37,7 @@ public class RecoverDialog extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                main.quitarResaltado();
                                 main.juegoBantumi.deserializa(partidaGuardada);
 
                                 Snackbar.make(

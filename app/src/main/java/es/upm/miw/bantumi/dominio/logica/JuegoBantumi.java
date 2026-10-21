@@ -191,13 +191,16 @@ public class JuegoBantumi {
      * Elige una posición aleatoria del campo del jugador2 y realiza la siembra
      * Si mantiene turno -> vuelve a jugar
      */
-    public void juegaComputador() {
+    public int juegaComputador() {
+        int ultimaPosicion = -1;
         while (this.turnoActual() == Turno.turnoJ2) {
             int pos = 7 + (int) (Math.random() * 6);    // posición aleatoria [7..12]
             if (this.getSemillas(pos) != 0 && (pos < NUM_POSICIONES - 1)) {
+                ultimaPosicion = pos;
                 this.jugar(pos);
             }
         }
+        return ultimaPosicion;
     }
 
     /**
