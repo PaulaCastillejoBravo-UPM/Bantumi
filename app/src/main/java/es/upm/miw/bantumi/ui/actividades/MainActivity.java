@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private View ultimaCasillaSeleccionada = null;
 
+    private JuegoBantumi.Turno turnoInicial;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,11 +65,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        actualizarNombreJugador();
         actualizarSemillasIniciales();
+        actualizarTurnoInicial();
 
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
-        juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
+        juegoBantumi = new JuegoBantumi(bantumiVM, turnoInicial, numInicialSemillas);
         crearObservadores();
 
         puntuacionPartidaRoomDatabase = PuntuacionPartidaRoomDatabase.getDatabase(this);
@@ -81,7 +85,10 @@ public class MainActivity extends AppCompatActivity {
         int semillasAnteriores = numInicialSemillas;
         actualizarSemillasIniciales();
 
-        if (semillasAnteriores != numInicialSemillas && juegoBantumi != null) {
+        JuegoBantumi.Turno turnoAnterior = turnoInicial;
+        actualizarTurnoInicial();
+
+        if (juegoBantumi != null && (semillasAnteriores != numInicialSemillas || turnoAnterior != turnoInicial)) {
             reiniciarPartida();
         }
     }
@@ -336,13 +343,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void reiniciarPartida() {
         actualizarSemillasIniciales();
+        actualizarTurnoInicial();
         quitarResaltado();
-        juegoBantumi = new JuegoBantumi(
-                bantumiVM,
-                JuegoBantumi.Turno.turnoJ1,
-                numInicialSemillas
-        );
-        juegoBantumi.inicializar(JuegoBantumi.Turno.turnoJ1);
+        juegoBantumi = new JuegoBantumi(bantumiVM, turnoInicial, numInicialSemillas);
+        juegoBantumi.inicializar(turnoInicial);
     }
 
     private void actualizarNombreJugador() {
@@ -369,6 +373,18 @@ public class MainActivity extends AppCompatActivity {
                 )
         );
     }
+
+    private void actualizarTurnoInicial() {
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String turnoGuardado = preferencias.getString(
+                getString(R.string.key_JugadorInicial),
+                "turnoJ1"
+        );
+
+        turnoInicial = JuegoBantumi.Turno.valueOf(turnoGuardado);
+    }
+
 
     private void resaltarCasillaSeleccionada(@NonNull View casilla) {
         if (ultimaCasillaSeleccionada != null) {

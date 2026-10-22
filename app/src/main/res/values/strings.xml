@@ -59,6 +59,17 @@
         <item>6</item>
     </string-array>
 
+    <string name="key_JugadorInicial">pref_JugadorInicial</string>
+    <string name="txtJugadorInicialTitulo">¿Quién empieza?</string>
+    <string-array name="opcJugadorInicial">
+        <item>Jugador</item>
+        <item>Máquina</item>
+    </string-array>
+    <string-array name="vJugadorInicial">
+        <item>turnoJ1</item>
+        <item>turnoJ2</item>
+    </string-array>
+
     <!-- Diálogo Final -->
     <string name="txtDialogoFinalTitulo">Fin del juego</string>
     <string name="txtDialogoFinalPregunta">¿Desea jugar otra partida?</string>

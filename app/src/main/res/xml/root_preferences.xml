@@ -23,6 +23,15 @@
             android:entries="@array/opcSemillasIniciales"
             android:entryValues="@array/vSemillasIniciales"
             app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="@string/key_JugadorInicial"
+            android:title="@string/txtJugadorInicialTitulo"
+            android:defaultValue="turnoJ1"
+            android:entries="@array/opcJugadorInicial"
+            android:entryValues="@array/vJugadorInicial"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
