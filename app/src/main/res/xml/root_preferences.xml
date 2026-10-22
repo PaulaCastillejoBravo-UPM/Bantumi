@@ -2,15 +2,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/txtAjustesTitulo">
+    <PreferenceCategory app:title="@string/prefTituloCategoria1">
 
         <EditTextPreference
             android:key="@string/key_NombreJugador"
-            android:title="@string/txtNombreJugadorTitulo"
+            android:title="@string/prefTituloNombreJugador"
             android:defaultValue="@string/txtPlayer1"
             android:singleLine="true"
             app:useSimpleSummaryProvider="true" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/prefTituloCategoria2">
+
+        <ListPreference
+            android:key="@string/key_SemillasIniciales"
+            android:title="@string/prefSemillasInicialesTitulo"
+            android:defaultValue="4"
+            android:entries="@array/opcSemillasIniciales"
+            android:entryValues="@array/vSemillasIniciales"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
 </PreferenceScreen>

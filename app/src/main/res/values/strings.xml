@@ -38,10 +38,26 @@
     <!-- Preferencias -->
     <string name="preferencesText">Ajustes</string>
     <string name="prefTituloCategoria1">Datos personales</string>
+    <string name="key_NombreJugador">pref_NombreJugador</string>
     <string name="prefTituloNombreJugador">Nombre del jugador</string>
     <string name="prefTextoNombreJugador">Pulse para teclear el nombre del jugador</string>
     <string name="prefTituloCategoria2">Ajustes del juego</string>
     <string name="prefTituloCategoria3">Más información…</string>
+
+    <string name="key_SemillasIniciales">pref_SemillasIniciales</string>
+    <string name="prefSemillasInicialesTitulo">Semillas iniciales</string>
+    <string-array name="opcSemillasIniciales">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    <string-array name="vSemillasIniciales">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
 
     <!-- Diálogo Final -->
     <string name="txtDialogoFinalTitulo">Fin del juego</string>
@@ -64,11 +80,6 @@
     <string name="txtFicheroVacio">No hay partidas guardadas</string>
     <string name="txtPartidasIdenticas">La partida actual ya coincide con la partida guardada</string>
 
-    <!-- Preferencias -->
-    <string name="key_NombreJugador">pref_NombreJugador</string>
-    <string name="txtAjustesTitulo">Ajustes</string>
-    <string name="txtNombreJugadorTitulo">Nombre del jugador</string>
-
     <!-- Tabla de mejores puntuaciones-->
     <string name="txtJugadorNombre">Jugador</string>
     <string name="txtMejorPuntuacion">Mejor puntuación</string>
@@ -87,5 +98,4 @@
     <string name="txtSemillasExactasEjemplo">Ej. 50</string>
     <string name="txtLimpiarFiltros">Limpiar filtros</string>
     <string name="txtAplicarFiltros">Filtrar</string>
-
 </resources>

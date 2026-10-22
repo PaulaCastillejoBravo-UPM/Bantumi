@@ -63,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        actualizarSemillasIniciales();
+
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
-        numInicialSemillas = getResources().getInteger(R.integer.intNumInicialSemillas);
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
         juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
         crearObservadores();
@@ -76,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         actualizarNombreJugador();
+
+        int semillasAnteriores = numInicialSemillas;
+        actualizarSemillasIniciales();
+
+        if (semillasAnteriores != numInicialSemillas && juegoBantumi != null) {
+            reiniciarPartida();
+        }
     }
 
     /**
@@ -326,9 +334,19 @@ public class MainActivity extends AppCompatActivity {
         new FinalAlertDialog(texto).show(getSupportFragmentManager(), "ALERT_DIALOG");
     }
 
+    public void reiniciarPartida() {
+        actualizarSemillasIniciales();
+        quitarResaltado();
+        juegoBantumi = new JuegoBantumi(
+                bantumiVM,
+                JuegoBantumi.Turno.turnoJ1,
+                numInicialSemillas
+        );
+        juegoBantumi.inicializar(JuegoBantumi.Turno.turnoJ1);
+    }
+
     private void actualizarNombreJugador() {
-        SharedPreferences preferencias =
-                PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
 
         nombreJugador = preferencias.getString(
                 getString(R.string.key_NombreJugador),
@@ -337,6 +355,19 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvJugador1 = findViewById(R.id.tvPlayer1);
         tvJugador1.setText(nombreJugador);
+    }
+
+    private void actualizarSemillasIniciales() {
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
+
+        numInicialSemillas = Integer.parseInt(
+                preferencias.getString(
+                        getString(R.string.key_SemillasIniciales),
+                        String.valueOf(
+                                getResources().getInteger(R.integer.intNumInicialSemillas)
+                        )
+                )
+        );
     }
 
     private void resaltarCasillaSeleccionada(@NonNull View casilla) {

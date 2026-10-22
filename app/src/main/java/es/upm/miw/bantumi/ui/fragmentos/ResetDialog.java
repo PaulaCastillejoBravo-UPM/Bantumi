@@ -31,7 +31,7 @@ public class ResetDialog extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 main.quitarResaltado();
-                                main.juegoBantumi.inicializar(JuegoBantumi.Turno.turnoJ1);
+                                main.reiniciarPartida();
                             }
                         }
                 )
