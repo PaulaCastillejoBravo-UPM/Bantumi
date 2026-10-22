@@ -78,5 +78,14 @@
     <string name="txtDialogoEliminacionTitulo">Eliminar puntuaciones</string>
     <string name="txtDialogoEliminacionPregunta">¿Está seguro de que desea eliminar todas las puntuaciones guardadas? Se perderá el progreso del juago.</string>
 
+    <!-- Filtros de mejores puntuaciones-->
+    <string name="txtFiltroJugador">Filtrar por jugador</string>
+    <string name="txtJugadorSpinner">Seleccionar jugador</string>
+    <string name="txtFiltroFecha">Filtrar por fecha</string>
+    <string name="txtFechaSelector">Todas las fechas</string>
+    <string name="txtFiltroSemillasExactas">Número exacto de semillas</string>
+    <string name="txtSemillasExactasEjemplo">Ej. 50</string>
+    <string name="txtLimpiarFiltros">Limpiar filtros</string>
+    <string name="txtAplicarFiltros">Filtrar</string>
 
 </resources>

@@ -4,12 +4,15 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,10 +23,13 @@ import es.upm.miw.bantumi.datos.models.PuntuacionPartida;
 import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRoomDatabase;
 import es.upm.miw.bantumi.datos.views.PuntuacionPartidaListAdapter;
 import es.upm.miw.bantumi.ui.fragmentos.DeleteDialog;
+import es.upm.miw.bantumi.ui.viewmodel.PuntuacionViewModel;
 
 public class PuntuacionActivity extends AppCompatActivity {
     PuntuacionPartidaRoomDatabase puntuacionPartidaRoomDatabase;
     List<PuntuacionPartida> puntuacionPartidas;
+
+    private PuntuacionViewModel puntuacionViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,24 @@ public class PuntuacionActivity extends AppCompatActivity {
         );
 
         adapter.setPuntuacionPartida(puntuacionPartidas);
+
+
+        puntuacionViewModel = new ViewModelProvider(this).get(PuntuacionViewModel.class);
+        android.widget.Button buttonFecha = findViewById(R.id.buttonFecha);
+        buttonFecha.setOnClickListener(v -> mostrarCalendario());
+        String fecha = puntuacionViewModel.getFechaSeleccionada().getValue();
+        if (fecha != null) {
+            buttonFecha.setText(fecha);
+        }
+
+
+        cargarJugadores();
+
+        android.widget.ImageButton buttonAplicarFiltros = findViewById(R.id.buttonAplicarFiltros);
+        buttonAplicarFiltros.setOnClickListener(v -> aplicarFiltros());
+
+        android.widget.ImageButton buttonLimpiarFiltros = findViewById(R.id.buttonLimpiarFiltros);
+        buttonLimpiarFiltros.setOnClickListener(v -> limpiarFiltros());
     }
 
     @Override
@@ -66,6 +90,7 @@ public class PuntuacionActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.puntuacion_menu, menu);
@@ -94,8 +119,47 @@ public class PuntuacionActivity extends AppCompatActivity {
 
     public void deleteAll() {
         puntuacionPartidaRoomDatabase.puntuacionPartidaDAO().deleteAll();
-
         puntuacionPartidas = puntuacionPartidaRoomDatabase.puntuacionPartidaDAO().getTopTen();
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+
+        PuntuacionPartidaListAdapter adapter = (PuntuacionPartidaListAdapter) recyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.setPuntuacionPartida(puntuacionPartidas);
+        }
+    }
+
+    private void mostrarCalendario() {
+        java.util.Calendar calendario = java.util.Calendar.getInstance();
+
+        int anio = calendario.get(java.util.Calendar.YEAR);
+        int mes = calendario.get(java.util.Calendar.MONTH);
+        int dia = calendario.get(java.util.Calendar.DAY_OF_MONTH);
+
+        android.app.DatePickerDialog selectorFecha = new android.app.DatePickerDialog(
+            this,
+            (view, anioElegido, mesElegido, diaElegido) -> {
+                String fecha = String.format(
+                        java.util.Locale.ROOT,
+                        "%04d-%02d-%02d",
+                        anioElegido,
+                        mesElegido + 1,
+                        diaElegido
+                );
+
+                puntuacionViewModel.setFechaSeleccionada(fecha);
+                android.widget.Button buttonFecha = findViewById(R.id.buttonFecha);
+                buttonFecha.setText(fecha);
+            },
+            anio, mes, dia
+        );
+
+        selectorFecha.show();
+    }
+
+
+    private void actualizarPuntuaciones(String nombreJugador, String fecha, Integer semillasAlmacen1) {
+        puntuacionPartidas = puntuacionPartidaRoomDatabase.puntuacionPartidaDAO().getTopTenFiltered(nombreJugador, fecha, semillasAlmacen1);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
 
@@ -104,5 +168,57 @@ public class PuntuacionActivity extends AppCompatActivity {
         if (adapter != null) {
             adapter.setPuntuacionPartida(puntuacionPartidas);
         }
+    }
+
+
+    private void cargarJugadores() {
+        List<String> jugadores = new java.util.ArrayList<>();
+
+        jugadores.add("Todos");
+        jugadores.addAll(puntuacionPartidaRoomDatabase.puntuacionPartidaDAO().getDistinctPlayers());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                jugadores
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        Spinner spinnerJugador = findViewById(R.id.spinnerJugador);
+        spinnerJugador.setAdapter(adapter);
+    }
+
+    private void aplicarFiltros() {
+        Spinner spinnerJugador = findViewById(R.id.spinnerJugador);
+        String nombreJugador = null;
+        if (spinnerJugador.getSelectedItemPosition() > 0) {
+            nombreJugador = spinnerJugador.getSelectedItem().toString();
+        }
+
+        String fechaFiltro = puntuacionViewModel.getFechaSeleccionada().getValue();
+
+        android.widget.EditText editTextSemillas = findViewById(R.id.editTextSemillas);
+        String textoSemillas = editTextSemillas.getText().toString().trim();
+        Integer semillasAlmacen1 = null;
+        if (!textoSemillas.isEmpty()) {
+            semillasAlmacen1 = Integer.parseInt(textoSemillas);
+        }
+
+        actualizarPuntuaciones(nombreJugador, fechaFiltro, semillasAlmacen1);
+    }
+
+    private void limpiarFiltros() {
+        Spinner spinnerJugador = findViewById(R.id.spinnerJugador);
+        spinnerJugador.setSelection(0);
+
+        puntuacionViewModel.setFechaSeleccionada(null);
+        android.widget.Button buttonFecha = findViewById(R.id.buttonFecha);
+        buttonFecha.setText(R.string.txtFechaSelector);
+
+        android.widget.EditText editTextSemillas = findViewById(R.id.editTextSemillas);
+        editTextSemillas.setText("");
+
+        actualizarPuntuaciones(null, null, null);
     }
 }
