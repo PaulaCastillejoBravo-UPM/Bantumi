@@ -61,14 +61,16 @@
 
     <string name="key_JugadorInicial">pref_JugadorInicial</string>
     <string name="txtJugadorInicialTitulo">¿Quién empieza?</string>
-    <string-array name="opcJugadorInicial">
-        <item>Jugador</item>
-        <item>Máquina</item>
-    </string-array>
-    <string-array name="vJugadorInicial">
-        <item>turnoJ1</item>
-        <item>turnoJ2</item>
-    </string-array>
+    <string name="txtEmpiezaMaquina">Empieza la máquina</string>
+    <string name="txtEmpiezaJugador">Empieza el jugador</string>
+
+    <string name="prefTituloCategoriaApariencia">Apariencia</string>
+    <string name="key_PaletaColores">pref_PaletaColores</string>
+    <string name="prefTituloPaletaColores">Paleta de colores</string>
+
+    <string name="txtElegirPaleta">Ver y elegir una paleta</string>
+    <string name="txtNombrePaleta">Nombre de la paleta</string>
+    <string name="txtPaletaElegida">✓ Seleccionada</string>
 
     <!-- Diálogo Final -->
     <string name="txtDialogoFinalTitulo">Fin del juego</string>

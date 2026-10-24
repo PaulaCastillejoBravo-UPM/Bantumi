@@ -4,11 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -30,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import es.upm.miw.bantumi.datos.data.PaletasDisponibles;
 import es.upm.miw.bantumi.datos.models.PuntuacionPartida;
 import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRoomDatabase;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
@@ -37,6 +40,7 @@ import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
 import es.upm.miw.bantumi.ui.fragmentos.RecoverDialog;
 import es.upm.miw.bantumi.ui.fragmentos.ResetDialog;
+import es.upm.miw.bantumi.ui.theme.PaletaColores;
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
 
     private JuegoBantumi.Turno turnoInicial;
 
+    private int colorCasillas;
+    private int colorAlmacenes;
+    private int colorTurnoActivo;
+    private int colorCasillaSeleccionada;
+    private int colorTexto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         actualizarNombreJugador();
         actualizarSemillasIniciales();
         actualizarTurnoInicial();
+        actualizarPaletaColores();
 
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
@@ -91,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         if (juegoBantumi != null && (semillasAnteriores != numInicialSemillas || turnoAnterior != turnoInicial)) {
             reiniciarPartida();
         }
+
+        actualizarPaletaColores();
     }
 
     /**
@@ -128,22 +141,21 @@ public class MainActivity extends AppCompatActivity {
     private void marcarTurno(@NonNull JuegoBantumi.Turno turnoActual) {
         TextView tvJugador1 = findViewById(R.id.tvPlayer1);
         TextView tvJugador2 = findViewById(R.id.tvPlayer2);
+
+        tvJugador1.setTextColor(Color.BLACK);
+        tvJugador2.setTextColor(Color.BLACK);
+        tvJugador1.setBackgroundColor(Color.TRANSPARENT);
+        tvJugador2.setBackgroundColor(Color.TRANSPARENT);
+
         switch (turnoActual) {
             case turnoJ1:
-                tvJugador1.setTextColor(getColor(R.color.white));
-                tvJugador1.setBackgroundColor(getColor(android.R.color.holo_blue_light));
-                tvJugador2.setTextColor(getColor(R.color.black));
-                tvJugador2.setBackgroundColor(getColor(R.color.white));
+                tvJugador1.setBackgroundColor(colorTurnoActivo);
                 break;
             case turnoJ2:
-                tvJugador1.setTextColor(getColor(R.color.black));
-                tvJugador1.setBackgroundColor(getColor(R.color.white));
-                tvJugador2.setTextColor(getColor(R.color.white));
-                tvJugador2.setBackgroundColor(getColor(android.R.color.holo_blue_light));
+                tvJugador2.setBackgroundColor(colorTurnoActivo);
                 break;
             default:
-                tvJugador1.setTextColor(getColor(R.color.black));
-                tvJugador2.setTextColor(getColor(R.color.black));
+                break;
         }
     }
 
@@ -377,27 +389,54 @@ public class MainActivity extends AppCompatActivity {
     private void actualizarTurnoInicial() {
         SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String turnoGuardado = preferencias.getString(
+        boolean empiezaMaquina = preferencias.getBoolean(
                 getString(R.string.key_JugadorInicial),
-                "turnoJ1"
+                false
         );
 
-        turnoInicial = JuegoBantumi.Turno.valueOf(turnoGuardado);
+        turnoInicial = empiezaMaquina ? JuegoBantumi.Turno.turnoJ2 : JuegoBantumi.Turno.turnoJ1;
     }
 
+    private void actualizarPaletaColores() {
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String idPaleta = preferencias.getString(
+                getString(R.string.key_PaletaColores),
+                PaletasDisponibles.obtenerPaletas().get(0).getId()
+        );
+
+        PaletaColores paletaSeleccionada = PaletasDisponibles.obtenerPaletas().get(0);
+
+        for (PaletaColores paleta : PaletasDisponibles.obtenerPaletas()) {
+            if (paleta.getId().equals(idPaleta)) {
+                paletaSeleccionada = paleta;
+                break;
+            }
+        }
+
+        int[] colores = paletaSeleccionada.getColores();
+
+        colorCasillas = colores[0];
+        colorAlmacenes = colores[1];
+        colorTurnoActivo = colores[2];
+        colorCasillaSeleccionada = colores[3];
+        colorTexto = colores[4];
+
+        aplicarPaletaColores();
+
+        if (juegoBantumi != null) {
+            marcarTurno(juegoBantumi.turnoActual());
+        }
+    }
 
     private void resaltarCasillaSeleccionada(@NonNull View casilla) {
         if (ultimaCasillaSeleccionada != null) {
             ultimaCasillaSeleccionada.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(
-                            getColor(R.color.md_theme_light_primary)
-                    ));
+                    android.content.res.ColorStateList.valueOf(colorCasillas));
         }
 
         casilla.setBackgroundTintList(
-                android.content.res.ColorStateList.valueOf(
-                        getColor(android.R.color.holo_green_light)
-                )
+                android.content.res.ColorStateList.valueOf(colorCasillaSeleccionada)
         );
 
         ultimaCasillaSeleccionada = casilla;
@@ -406,12 +445,50 @@ public class MainActivity extends AppCompatActivity {
     public void quitarResaltado() {
         if (ultimaCasillaSeleccionada != null) {
             ultimaCasillaSeleccionada.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(
-                            getColor(R.color.md_theme_light_primary)
-                    )
+                    android.content.res.ColorStateList.valueOf(colorCasillas)
             );
 
             ultimaCasillaSeleccionada = null;
         }
     }
+
+
+    private void aplicarPaletaColores() {
+        for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++) {
+            if (i == 6 || i == 13) {
+                continue;
+            }
+
+            String nombre = String.format(Locale.ROOT, "casilla_%02d", i);
+            int id = getResources().getIdentifier(
+                    nombre, "id", getPackageName()
+            );
+
+            Button casilla = findViewById(id);
+
+            if (casilla != null) {
+                casilla.setBackgroundTintList(
+                        android.content.res.ColorStateList.valueOf(colorCasillas)
+                );
+                casilla.setTextColor(colorTexto);
+            }
+        }
+
+
+        TextView almacenJ1 = findViewById(R.id.casilla_06);
+        TextView almacenJ2 = findViewById(R.id.casilla_13);
+
+        almacenJ1.setBackgroundColor(Color.TRANSPARENT);
+        almacenJ2.setBackgroundColor(Color.TRANSPARENT);
+        almacenJ1.setTextColor(colorAlmacenes);
+        almacenJ2.setTextColor(colorAlmacenes);
+
+
+        TextView jugador1 = findViewById(R.id.tvPlayer1);
+        TextView jugador2 = findViewById(R.id.tvPlayer2);
+
+        jugador1.setTextColor(colorTexto);
+        jugador2.setTextColor(colorTexto);
+    }
+
 }

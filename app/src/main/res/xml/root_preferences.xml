@@ -24,13 +24,23 @@
             android:entryValues="@array/vSemillasIniciales"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <SwitchPreferenceCompat
             android:key="@string/key_JugadorInicial"
             android:title="@string/txtJugadorInicialTitulo"
-            android:defaultValue="turnoJ1"
-            android:entries="@array/opcJugadorInicial"
-            android:entryValues="@array/vJugadorInicial"
-            app:useSimpleSummaryProvider="true" />
+            android:defaultValue="false"
+            android:summaryOn="@string/txtEmpiezaMaquina"
+            android:summaryOff="@string/txtEmpiezaJugador"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        app:title="@string/prefTituloCategoriaApariencia">
+
+        <Preference
+            android:key="@string/key_PaletaColores"
+            android:title="@string/prefTituloPaletaColores"
+            android:summary="@string/txtElegirPaleta" />
 
     </PreferenceCategory>
 

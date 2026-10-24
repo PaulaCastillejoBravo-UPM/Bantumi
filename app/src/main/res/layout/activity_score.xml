@@ -22,31 +22,46 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/md_theme_light_primary"
-        android:padding="4dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         app:layout_constraintTop_toBottomOf="@id/filtrosRanking"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/txtJugadorNombre"
-            android:textStyle="bold"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/white" />
-
-        <TextView
+            android:id="@+id/tvEncabezadOrden"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:text="#"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+
+        <TextView
+            android:id="@+id/tvEncabezadoPuntuacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
             android:text="@string/txtMejorPuntuacion"
             android:textStyle="bold"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/white" />
+            android:gravity="start"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <TextView
+            android:id="@+id/tvEncabezadoJugador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:text="@string/txtJugadorNombre"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -54,10 +69,14 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/white"
-        tools:listitem="@layout/recycler_view_item"
+        tools:listitem="@layout/recyclerview_best_score_item"
         app:layout_constraintTop_toBottomOf="@id/encabezadosTabla"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,15 @@
 package es.upm.miw.bantumi.ui.actividades;
 
-import android.app.AlertDialog;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,16 +17,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import es.upm.miw.bantumi.R;
+import es.upm.miw.bantumi.datos.data.PaletasDisponibles;
 import es.upm.miw.bantumi.datos.models.PuntuacionPartida;
 import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRoomDatabase;
 import es.upm.miw.bantumi.datos.views.PuntuacionPartidaListAdapter;
 import es.upm.miw.bantumi.ui.fragmentos.DeleteDialog;
+import es.upm.miw.bantumi.ui.theme.PaletaColores;
 import es.upm.miw.bantumi.ui.viewmodel.PuntuacionViewModel;
 
 public class PuntuacionActivity extends AppCompatActivity {
@@ -69,6 +76,7 @@ public class PuntuacionActivity extends AppCompatActivity {
         puntuacionViewModel = new ViewModelProvider(this).get(PuntuacionViewModel.class);
         android.widget.Button buttonFecha = findViewById(R.id.buttonFecha);
         buttonFecha.setOnClickListener(v -> mostrarCalendario());
+        aplicarColoresPaleta();
         String fecha = puntuacionViewModel.getFechaSeleccionada().getValue();
         if (fecha != null) {
             buttonFecha.setText(fecha);
@@ -82,6 +90,12 @@ public class PuntuacionActivity extends AppCompatActivity {
 
         android.widget.ImageButton buttonLimpiarFiltros = findViewById(R.id.buttonLimpiarFiltros);
         buttonLimpiarFiltros.setOnClickListener(v -> limpiarFiltros());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        aplicarColoresPaleta();
     }
 
     @Override
@@ -220,5 +234,43 @@ public class PuntuacionActivity extends AppCompatActivity {
         editTextSemillas.setText("");
 
         actualizarPuntuaciones(null, null, null);
+    }
+
+    private void aplicarColoresPaleta() {
+        SharedPreferences preferencias = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String idPaleta = preferencias.getString(
+                getString(R.string.key_PaletaColores),
+                PaletasDisponibles.obtenerPaletas().get(0).getId()
+        );
+
+        PaletaColores paletaSeleccionada = PaletasDisponibles.obtenerPaletas().get(0);
+
+        for (PaletaColores paleta : PaletasDisponibles.obtenerPaletas()) {
+            if (paleta.getId().equals(idPaleta)) {
+                paletaSeleccionada = paleta;
+                break;
+            }
+        }
+
+        int[] colores = paletaSeleccionada.getColores();
+
+        int colorCasillas = colores[0];
+        int colorTexto = colores[4];
+
+        Button buttonFecha = findViewById(R.id.buttonFecha);
+        buttonFecha.setBackgroundTintList(
+                ColorStateList.valueOf(colorCasillas)
+        );
+
+        View encabezadosTabla = findViewById(R.id.encabezadosTabla);
+        encabezadosTabla.setBackgroundColor(colorCasillas);
+        buttonFecha.setTextColor(colorTexto);
+
+        TextView textoJugador = encabezadosTabla.findViewById(R.id.tvEncabezadoJugador);
+        TextView textoPuntuacion = encabezadosTabla.findViewById(R.id.tvEncabezadoPuntuacion);
+
+        textoJugador.setTextColor(colorTexto);
+        textoPuntuacion.setTextColor(colorTexto);
     }
 }

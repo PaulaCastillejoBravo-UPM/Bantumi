@@ -19,10 +19,13 @@ public class PuntuacionPartidaListAdapter extends RecyclerView.Adapter<Puntuacio
         private final TextView nombreJugadorItemView;
         private final TextView mejorPuntuacionItemView;
 
+        private final TextView ordenItemView;
+
         private PuntuacionPartidaViewHolder(View itemView) {
             super(itemView);
             nombreJugadorItemView = itemView.findViewById(R.id.tvNombreJugador);
             mejorPuntuacionItemView = itemView.findViewById(R.id.tvMejorPuntuacion);
+            ordenItemView = itemView.findViewById(R.id.tvOrden);
         }
     }
 
@@ -36,7 +39,7 @@ public class PuntuacionPartidaListAdapter extends RecyclerView.Adapter<Puntuacio
     @NonNull
     @Override
     public PuntuacionPartidaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recycler_view_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.recyclerview_best_score_item, parent, false);
         return new PuntuacionPartidaViewHolder(itemView);
     }
 
@@ -47,6 +50,8 @@ public class PuntuacionPartidaListAdapter extends RecyclerView.Adapter<Puntuacio
             holder.nombreJugadorItemView.setText(current.getNombreJugador());
 
             holder.mejorPuntuacionItemView.setText(String.valueOf(current.getMejorPuntuacion()));
+
+            holder.ordenItemView.setText(String.valueOf(position + 1));
         }
     }
 

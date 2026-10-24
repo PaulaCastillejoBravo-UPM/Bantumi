@@ -26,6 +26,7 @@
             android:name=".ui.actividades.BantumiPrefs"
             android:exported="false" />
         <activity android:name=".ui.actividades.PuntuacionActivity" />
+        <activity android:name=".ui.actividades.PaletasActivity" />
     </application>
 
 </manifest>
