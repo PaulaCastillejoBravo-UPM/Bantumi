@@ -222,6 +222,15 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemId == R.id.opcRecuperarPartida) {
             String[] ficheros = obtenerFicherosPartidas();
 
+            if (ficheros.length == 0) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtFicheroVacio),
+                        Snackbar.LENGTH_SHORT
+                ).show();
+                return true;
+            }
+
             List<String> partidasGuardadas = new ArrayList<>();
 
             for (String fichero : ficheros) {
