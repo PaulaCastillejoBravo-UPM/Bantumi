@@ -29,7 +29,9 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import es.upm.miw.bantumi.datos.data.PaletasDisponibles;
@@ -38,6 +40,7 @@ import es.upm.miw.bantumi.datos.models.PuntuacionPartidaRoomDatabase;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
+import es.upm.miw.bantumi.ui.fragmentos.ListSavedGamesDialog;
 import es.upm.miw.bantumi.ui.fragmentos.RecoverDialog;
 import es.upm.miw.bantumi.ui.fragmentos.ResetDialog;
 import es.upm.miw.bantumi.ui.theme.PaletaColores;
@@ -198,8 +201,10 @@ public class MainActivity extends AppCompatActivity {
 
             FileOutputStream fos;
 
+            String nombreFichero = generarNombreFicheroPartida();
+
             try {
-                fos = openFileOutput(getString(R.string.default_NombreFich), Context.MODE_PRIVATE);
+                fos = openFileOutput(nombreFichero, Context.MODE_PRIVATE);
 
                 fos.write(partidaSerializada.getBytes());
                 fos.close();
@@ -215,46 +220,15 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i("MiW", "Partida guardada");
         } else if (itemId == R.id.opcRecuperarPartida) {
-            boolean hayContenido = false;
-            BufferedReader fin;
-            String partidaRecuperada = "";
+            String[] ficheros = obtenerFicherosPartidas();
 
-            try {
-                fin = new BufferedReader(
-                        new InputStreamReader(openFileInput(getString(R.string.default_NombreFich))));
+            List<String> partidasGuardadas = new ArrayList<>();
 
-                String linea = fin.readLine();
-                while (linea != null) {
-                    hayContenido = true;
-                    partidaRecuperada = linea;
-                    linea = fin.readLine();
-                }
-                fin.close();
-
-                Log.i(LOG_TAG, "Partida recuperada:" + partidaRecuperada);
-
-                if(partidaRecuperada.equals(juegoBantumi.serializa())) {
-                    Snackbar.make(
-                            findViewById(android.R.id.content),
-                            getString(R.string.txtPartidasIdenticas),
-                            Snackbar.LENGTH_SHORT
-                    ).show();
-                }else {
-                    new RecoverDialog(partidaRecuperada).show(getSupportFragmentManager(), "RECOVER_DIALOG");
-                }
-
-                Log.i(LOG_TAG, "Partida recuperada");
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "FILE I/O ERROR: " + e.getMessage());
+            for (String fichero : ficheros) {
+                partidasGuardadas.add(obtenerFechaPartida(fichero));
             }
 
-            if (!hayContenido) {
-                Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.txtFicheroVacio),
-                        Snackbar.LENGTH_SHORT
-                ).show();
-            }
+            new ListSavedGamesDialog(partidasGuardadas, ficheros).show(getSupportFragmentManager(), "LIST_SAVED_GAMES_DIALOG");
 
         } else if (itemId == R.id.opcMejoresResultados) {
             Intent intent = new Intent(MainActivity.this, PuntuacionActivity.class);
@@ -359,6 +333,83 @@ public class MainActivity extends AppCompatActivity {
         quitarResaltado();
         juegoBantumi = new JuegoBantumi(bantumiVM, turnoInicial, numInicialSemillas);
         juegoBantumi.inicializar(turnoInicial);
+    }
+
+
+    private String generarNombreFicheroPartida() {
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.ROOT);
+
+        String fechaHora = formatoFecha.format(new Date());
+
+        return "partida_" + fechaHora + ".txt";
+    }
+
+    private String[] obtenerFicherosPartidas() {
+        String[] ficheros = fileList();
+
+        return java.util.Arrays.stream(ficheros).filter(fichero -> fichero.startsWith("partida_")).sorted(java.util.Comparator.reverseOrder()).toArray(String[]::new);
+    }
+
+    private String obtenerFechaPartida(String nombreFichero) {
+        String fecha = nombreFichero.replace("partida_", "").replace(".txt", "");
+
+        SimpleDateFormat formatoNombre = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.ROOT);
+
+        SimpleDateFormat formatoVisible = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+
+        try {
+            Date fechaHora = formatoNombre.parse(fecha);
+
+            return formatoVisible.format(fechaHora);
+        } catch (java.text.ParseException e) {
+            Log.e(LOG_TAG, "Error al interpretar la fecha", e);
+            return nombreFichero;
+        }
+    }
+
+    public void recuperarPartida(String nombreFichero) {
+        boolean hayContenido = false;
+        String partidaRecuperada = "";
+
+        try (
+                BufferedReader fin = new BufferedReader(
+                        new InputStreamReader(openFileInput(nombreFichero))
+                )
+        ) {
+            String linea = fin.readLine();
+
+            while (linea != null) {
+                hayContenido = true;
+                partidaRecuperada = linea;
+                linea = fin.readLine();
+            }
+
+            Log.i(LOG_TAG, "Partida recuperada: " + partidaRecuperada);
+
+            if (partidaRecuperada.equals(juegoBantumi.serializa())) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtPartidasIdenticas),
+                        Snackbar.LENGTH_SHORT
+                ).show();
+            } else {
+                new RecoverDialog(partidaRecuperada)
+                        .show(getSupportFragmentManager(), "RECOVER_DIALOG");
+            }
+
+            Log.i(LOG_TAG, "Partida recuperada");
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "FILE I/O ERROR: " + e.getMessage());
+        }
+
+        if (!hayContenido) {
+            Snackbar.make(
+                    findViewById(android.R.id.content),
+                    getString(R.string.txtFicheroVacio),
+                    Snackbar.LENGTH_SHORT
+            ).show();
+        }
     }
 
     private void actualizarNombreJugador() {

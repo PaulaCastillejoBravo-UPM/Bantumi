@@ -111,4 +111,8 @@
     <string name="txtSemillasExactasEjemplo">Ej. 50</string>
     <string name="txtLimpiarFiltros">Limpiar filtros</string>
     <string name="txtAplicarFiltros">Filtrar</string>
+
+    <!-- Diálogo Listado Partidas Guardadas -->
+    <string name="txtDialogoPartidasGuardadasTitulo">Partidas guardadas</string>
+
 </resources>

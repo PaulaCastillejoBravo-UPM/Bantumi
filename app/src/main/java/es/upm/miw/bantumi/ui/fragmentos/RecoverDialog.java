@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import es.upm.miw.bantumi.R;
-import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
 import es.upm.miw.bantumi.ui.actividades.MainActivity;
 
 public class RecoverDialog extends DialogFragment {

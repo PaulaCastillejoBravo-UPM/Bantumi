@@ -256,11 +256,12 @@ public class PuntuacionActivity extends AppCompatActivity {
         int[] colores = paletaSeleccionada.getColores();
 
         int colorCasillas = colores[0];
+        int colorCasillaSeleccionada = colores[3];
         int colorTexto = colores[4];
 
         Button buttonFecha = findViewById(R.id.buttonFecha);
         buttonFecha.setBackgroundTintList(
-                ColorStateList.valueOf(colorCasillas)
+                ColorStateList.valueOf(colorCasillaSeleccionada)
         );
 
         View encabezadosTabla = findViewById(R.id.encabezadosTabla);
@@ -269,8 +270,10 @@ public class PuntuacionActivity extends AppCompatActivity {
 
         TextView textoJugador = encabezadosTabla.findViewById(R.id.tvEncabezadoJugador);
         TextView textoPuntuacion = encabezadosTabla.findViewById(R.id.tvEncabezadoPuntuacion);
+        TextView textoOrden = encabezadosTabla.findViewById(R.id.tvEncabezadOrden);
 
         textoJugador.setTextColor(colorTexto);
         textoPuntuacion.setTextColor(colorTexto);
+        textoOrden.setTextColor(colorTexto);
     }
 }
